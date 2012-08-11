@@ -5,7 +5,7 @@ group :server do
 end
 
 group :client do
-  gem "gosu", "0.7.43"
+  gem "gosu", "0.7.45"
 end
 
 group :development do
