@@ -1,7 +1,8 @@
-require 'satellite/network/connection'
-require 'satellite/network/remote'
-require 'satellite/network/pool'
 require 'satellite/log'
+require 'satellite/network/connection'
+require 'satellite/network/event'
+require 'satellite/network/pool'
+require 'satellite/network/remote'
 
 module Satellite
   module Network
@@ -12,33 +13,30 @@ module Satellite
         @pool = Pool.new
       end
 
-      def send_event(options={})
-        event_name = options[:event_name]
-        data = options[:data]
-        id = options[:id]
-        unless remote = @pool.find(id)
-          Log.debug "Remote #{id.inspect} not found. I have #{@pool.remotes.inspect}"
+      def send_event(event)
+        unless event.is_a?(Event)
+          Log.error "Network stack received invalid event from server: #{event.inspect}"
           return
         end
-        #Log.debug "Found #{id.inspect}."
-        payload = Marshal.dump({ event_name: event_name, data: data })
-        #Log.debug "Sending to #{remote.port}"
+        unless remote = @pool.find(event.receiver_id)
+          Log.debug "Remote #{event.receiver_id.inspect} not found. I have #{@pool.remotes.inspect}"
+          return
+        end
+        payload = Marshal.dump({ kind: event.kind, data: event.data })
         @socket.send_datagram Datagram.new endpoint: remote.endpoint, port: remote.port, payload: payload
       end
 
-      def broadcast(options={})
-        event_name = options[:event_name]
-        data = options[:data]
+      def broadcast(event)
         remotes.values.each do |remote|
-          send_event id: remote.id, event_name: event_name, data: data
+          customized_event = Event.new receiver_id: remote.id, kind: event.kind, data: event.data
+          send_event customized_event
         end
       end
 
       def receive_events
-        @socket.receive_datagrams do |datagram|
-          payload = Marshal.load(datagram.payload)
-          @pool << Remote.new(id: payload[:id], endpoint: datagram.endpoint, port: datagram.port)
-          yield payload[:id], payload[:event_name], payload[:data]
+        receive_remotes_and_payloads do |remote, payload|
+          @pool << remote
+          yield Event.new sender_id: remote.id, kind: payload[:kind], data: payload[:data]
         end
       end
 

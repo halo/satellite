@@ -1,10 +1,11 @@
 require 'spec_helper'
 require 'satellite/network/server'
+require 'satellite/network/event'
 
 describe Satellite::Network::Server do
 
   before do
-    @it = Satellite::Network::Server.new id: 'abcdefgh', port: 33033
+    @it = Satellite::Network::Server.new id: 'blue_server', port: 33033
     @client1 = UDPSocket.new
     @client2 = UDPSocket.new
     @client1.bind(nil, 12345)
@@ -26,55 +27,67 @@ describe Satellite::Network::Server do
   end
 
   describe '#send_event' do
+    it 'sends nothing to unknown remotes' do
+      event = Satellite::Network::Event.new sender_id: 'blue_server', kind: :hello, data: 'abcdefg'
+      @it.send_event(event).should be_nil
+    end
+
     it 'sends an event to a registered remote' do
-      @client1.send Marshal.dump({ id: 'abcdefgh', event_name: :hello, data: 'abcdefgh' }), 0
-      sleep 0.01
+      # Registering the client
+      @client1.send Marshal.dump(sender_id: 'red_client', event_name: :hello, data: nil), 0
+      sleep 0.05
       @it.receive_events {}
-      @it.send_event id: 'abcdefgh', event_name: :blue, data: { :some => 'data' }
-      Marshal.load(@client1.recvfrom(65507).first).should == { event_name: :blue, data: { some: 'data' } }
+      # Sending the event
+      event = Satellite::Network::Event.new receiver_id: 'red_client', kind: :blue, data: { some: 'data' }
+      @it.send_event event
+      sleep 0.05
+      # Making sure it arrived
+      Marshal.load(@client1.recvfrom_nonblock(65507).first).should == { kind: :blue, data: { some: 'data' } }
     end
   end
 
   describe '#broadcast' do
     it 'sends events to all registered remotes' do
-      @client1.send Marshal.dump({ id: 'abcdefgh', event_name: :hello }), 0
-      @client2.send Marshal.dump({ id: 'ijklmnop', event_name: :hello }), 0
-      @client2.send Marshal.dump({ id: 'ijklmnop', event_name: :hello }), 0
-      sleep 0.01
+      # Registering the clients
+      @client1.send Marshal.dump({ sender_id: 'white_client', kind: :hello }), 0
+      @client2.send Marshal.dump({ sender_id: 'green_client', kind: :hi }), 0
+      sleep 0.05
       @it.receive_events {}
-      @it.send_event id: 'abcdefgh', event_name: :blue, data: { :some => 'one' }
-      @it.send_event id: 'ijklmnop', event_name: :green, data: { :some => 'two' }
-      @it.send_event id: 'ijklmnop', event_name: :white, data: { :some => 'three' }
-      client1_data = []
-      client2_data = []
-      client1_data << @client1.recvfrom_nonblock(65507)
-      lambda { client1_data << @client1.recvfrom_nonblock(65507) }.should raise_error(Errno::EAGAIN)
-      client2_data << @client2.recvfrom_nonblock(65507)
-      client2_data << @client2.recvfrom_nonblock(65507)
-      lambda { client2_data << @client2.recvfrom_nonblock(65507) }.should raise_error(Errno::EAGAIN)
-      client1_data.size.should == 1
-      client2_data.size.should == 2
-      Marshal.load(client1_data.first.first).should == { event_name: :blue, data: { some: 'one' } }
-      Marshal.load(client2_data.first.first).should == { event_name: :green, data: { some: 'two' } }
-      Marshal.load(client2_data.last.first).should == { event_name: :white, data: { some: 'three' } }
+      # Broadcasting
+      @it.broadcast Satellite::Network::Event.new kind: :blue, data: { :some => 'one' }
+      sleep 0.05
+      # Making sure it arrived
+      Marshal.load(@client1.recvfrom_nonblock(65507).first).should == { kind: :blue, data: { some: 'one' } }
+      Marshal.load(@client2.recvfrom_nonblock(65507).first).should == { kind: :blue, data: { some: 'one' } }
     end
   end
 
   describe '#receive_events' do
     it 'yields nothing if there are no events' do
-      result = []
-      @it.receive_events { |event| result << event }
-      result.should be_empty
+      stack = []
+      @it.receive_events { |event| stack << event }
+      stack.should be_empty
     end
 
     it 'yields all events' do
-      @client1.send Marshal.dump({ id: 'abcdefgh',event_name: :luke, data: { :some => 'ice' } }), 0
-      @client2.send Marshal.dump({ id: 'ijklmnop',event_name: :anakin, data: { :some => 'fire' } }), 0
-      @client2.send Marshal.dump({ id: 'ijklmnop',event_name: :lea, data: { :some => 'water' } }), 0
-      sleep 0.01
-      result = []
-      @it.receive_events { |id, event, data| result << [id, event, data] }
-      result.should == [['abcdefgh', :luke, { some: 'ice' }], ['ijklmnop', :anakin, { some: 'fire' }], ['ijklmnop', :lea, { some: 'water' }]]
+      # Sending events
+      @client1.send Marshal.dump({ sender_id: 'purple_client', kind: :luke, data: { :some => 'ice' } }), 0
+      @client2.send Marshal.dump({ sender_id: 'yellow_client', kind: :anakin, data: { :some => 'fire' } }), 0
+      @client2.send Marshal.dump({ sender_id: 'yellow_client', kind: :lea, data: { :some => 'water' } }), 0
+      sleep 0.05
+      stack = []
+      # Receiving them
+      @it.receive_events { |event| stack << event }
+      stack.size.should == 3
+      stack[0].sender_id.should == 'purple_client'
+      stack[0].kind.should == :luke
+      stack[0].data.should == { :some => 'ice' }
+      stack[1].sender_id.should == 'yellow_client'
+      stack[1].kind.should == :anakin
+      stack[1].data.should == { :some => 'fire' }
+      stack[2].sender_id.should == 'yellow_client'
+      stack[2].kind.should == :lea
+      stack[2].data.should == { :some => 'water' }
     end
   end
 

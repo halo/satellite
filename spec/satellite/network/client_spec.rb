@@ -31,8 +31,10 @@ describe Satellite::Network::Client do
     end
 
     it 'sends an event' do
-      @it.send_event event_name: :show, data: { :some => 'data' }
-      Marshal.load(@server.recvfrom(65507).first).should == { id: 'abcdefgh', event_name: :show, data: { some: 'data' } }
+      event = Satellite::Network::Event.new kind: :dance, data: { :some => 'data' }
+      @it.send_event event
+      sleep 0.05
+      Marshal.load(@server.recvfrom(65507).first).should == { sender_id: 'abcdefgh', kind: :dance, data: { some: 'data' } }
     end
   end
 
@@ -54,11 +56,18 @@ describe Satellite::Network::Client do
     end
 
     it 'yields all events' do
-      @server.send Marshal.dump({ event_name: :shot, data: { some: 'data' } }), 0
-      @server.send Marshal.dump({ event_name: :shot, data: { some: 'more data' } }), 0
-      result = []
-      @it.receive_events { |event, data| result << [event, data] }
-      result.should == [[:shot, {:some=>"data"}], [:shot, { some: "more data"}]]
+      @server.send Marshal.dump({ sender_id: 'server', kind: :shot, data: { some: 'data' } }), 0
+      @server.send Marshal.dump({ sender_id: 'server', kind: :blob, data: { some: 'more data' } }), 0
+      sleep 0.05
+      stack = []
+      @it.receive_events { |event| stack << event }
+      stack.size.should == 2
+      stack[0].sender_id.should == 'server'
+      stack[0].kind.should == :shot
+      stack[0].data.should == { :some => 'data' }
+      stack[1].sender_id.should == 'server'
+      stack[1].kind.should == :blob
+      stack[1].data.should == { :some => 'more data' }
     end
   end
 

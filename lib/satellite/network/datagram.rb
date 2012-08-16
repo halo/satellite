@@ -3,6 +3,8 @@ require 'satellite/extensions/core/object/blank'
 
 module Satellite
   module Network
+    # A Datagram is the packet of the lowest level that Satellite is concerned with.
+    # It contains the destination or sender address and a payload.
     class Datagram
 
       attr_reader :payload, :endpoint, :port

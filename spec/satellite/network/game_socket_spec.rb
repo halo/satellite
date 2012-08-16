@@ -50,6 +50,7 @@ describe Satellite::Network::GameSocket do
     it 'sends a datagram' do
       datagram = Satellite::Network::Datagram.new(payload: 'twelve bytes', endpoint: '127.0.0.1', port: 12345)
       @it.send_datagram(datagram).should == 12
+      sleep 0.05
       @receiver.recvfrom(65507).first.should == 'twelve bytes'
     end
 
@@ -88,7 +89,7 @@ describe Satellite::Network::GameSocket do
       @sender.send 'message two', 0
       @sender.send 'message three', 0
       result = []
-      sleep 0.01
+      sleep 0.05
       @it.receive_datagrams { |datagram| result << datagram }
       result.map(&:payload).should == ['message one', 'message two', 'message three']
       result.map(&:endpoint).should == Array.new(3, '127.0.0.1')
