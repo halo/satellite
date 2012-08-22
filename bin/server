@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 $: << File.expand_path('../lib', File.dirname(__FILE__))
-require 'satellite/server/loop'
+require 'satellite/server/server'
 
-Satellite::Server::Loop.new.start
+Satellite::Server::Server.new.start
 
