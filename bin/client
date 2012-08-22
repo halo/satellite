@@ -3,5 +3,5 @@
 $: << File.expand_path('../lib', File.dirname(__FILE__))
 require 'satellite/client/window'
 
-Satellite::Client::Window.new.show
+Satellite::Client::Client.new.start
 

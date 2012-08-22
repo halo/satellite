@@ -9,17 +9,16 @@ module Satellite
 
       def screen_width
         1280
-        640
+        1024
       end
 
       def screen_height
         800
-        480
+        640
       end
 
       def server_endpoint
         '127.0.0.1'
-        #'109.239.49.100'
       end
 
       def server_port

@@ -8,7 +8,7 @@ require 'satellite/network/remote'
 module Satellite
   module Network
     class Client < Connection
-      attr_reader :id, :key, :remote
+      attr_reader :id, :remote
 
       def initialize(options={})
         @id = options[:id] || random_id
