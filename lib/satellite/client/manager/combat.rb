@@ -37,17 +37,11 @@ module Satellite
           Graphics::Text.new(:text => 'Welcome to Satellite').draw
         end
 
-        def button_down(id)
-          key = Input.key(id)
+        def button_down(key)
           @network.send_event event_name: :button_down, data: key
         end
 
-        def button_up(id)
-          key = Input.key(id)
-          if key == :escape
-            @network.send_event event_name: :leavech
-            close
-          end
+        def button_up(key)
           @network.send_event event_name: :button_up, data: key
         end
 

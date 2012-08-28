@@ -12,7 +12,7 @@ module Satellite
         end
 
         def window
-          $window
+          Client.window
         end
 
         def draw_rot(*args)

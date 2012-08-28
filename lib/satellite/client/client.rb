@@ -2,15 +2,13 @@ require 'gosu'
 require 'satellite/network/client'
 require 'satellite/client/settings'
 require 'satellite/client/input'
-require 'satellite/client/graphics/sprite'
-require 'satellite/client/graphics/text'
 require 'satellite/client/manager/lobby'
 
 module Satellite
   module Client
     class Client < Gosu::Window
 
-      # Internal: Convenience wrapper that makes it easier to stub the global variable in tests
+      # Internal: Convenience wrapper that makes it easier to stub the "global" window-variable in tests
       def self.window
         @@window
       end
@@ -30,11 +28,18 @@ module Satellite
       private
 
       def update
-        @manager = @manager.replace if @manager.replace
+        if new_manager = @manager.replace
+          Log.debug "Switching Manager: #{@manager} -> #{new_manager}"
+          @manager = new_manager
+        end
         receive_events
-        super
+        @manager.update
         send_events
         @network.flush
+      end
+
+      def draw
+        @manager.draw
       end
 
       def receive_events
@@ -44,10 +49,19 @@ module Satellite
       end
 
       def send_events
-        @manager.events_to_send.each do |event|
-          @network.send_event kind: event.kind, data: event.data
+        while event = @manager.events_to_send.pop do
+          @network.send_event event
         end
       end
+
+      def button_down(id)
+        @manager.button_down Input.key(id)
+      end
+
+      def button_up(id)
+        @manager.button_up Input.key(id)
+      end
+
     end
   end
 end

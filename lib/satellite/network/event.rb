@@ -26,6 +26,16 @@ module Satellite
         @kind.present? ? @kind.to_s.to_sym : :undefined
       end
 
+      def inspect
+        result = %w{ #<Event }
+        result << "kind=#{kind.inspect}"
+        result << "receiver_id=#{receiver_id.inspect}" if receiver_id.present?
+        result << "sender_id=#{sender_id.inspect}" if sender_id.present?
+        result << "data=#{data.inspect}"
+        result << '>'
+        result.compact.join(' ')
+      end
+
     end
   end
 end

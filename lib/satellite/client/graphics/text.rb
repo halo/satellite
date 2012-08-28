@@ -2,18 +2,20 @@ require 'rubygems'
 require 'gosu'
 
 require 'satellite/client/graphics/object'
-require 'satellite/client/window'
+require 'satellite/client/client'
 
 module Satellite
   module Client
     module Graphics
       class Text < Object
-        attr_accessor :font, :text, :height
+        attr_accessor :font, :text, :size
+        attr_writer :height
 
         def initialize(options={})
           super
           @text = options[:text] || 'text'
-          @height = options[:height] || 30
+          @height = options[:height]
+          @size = options[:size] || 3
           @font = default_font
         end
 
@@ -22,7 +24,17 @@ module Satellite
         end
 
         def window
-          Window.main
+          Client.window
+        end
+
+        def height
+          if @height
+            # Fixed height in pixels
+            @height.to_i
+          else
+            # Height relative to window height
+            (Settings.screen_height.to_f * (@size.to_f / 100.0)).to_i
+          end
         end
 
         def default_font

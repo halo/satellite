@@ -1,5 +1,5 @@
 require 'satellite/log'
-require 'satellite/server/manager/base'
+require 'satellite/server/manager/default'
 
 module Satellite
   module Server

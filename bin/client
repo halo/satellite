@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 $: << File.expand_path('../lib', File.dirname(__FILE__))
-require 'satellite/client/window'
+require 'satellite/client/client'
 
 Satellite::Client::Client.new.start
 
