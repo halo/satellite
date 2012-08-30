@@ -1,8 +1,6 @@
 require 'satellite/client/manager/default'
 require 'satellite/client/manager/exit'
-require 'satellite/network/event'
-require 'satellite/client/graphics/sprite'
-require 'satellite/client/graphics/text'
+require 'satellite/client/graphics/layout/lobby'
 
 module Satellite
   module Client
@@ -10,18 +8,27 @@ module Satellite
       class Lobby < Default
 
         def on_event(event)
+          Log.debug "Got event: #{event.inspect}"
+          case event.kind
+          when :players_in_lobby
+            layout.player_names = event.data
+          end
         end
 
         def update
+          super
+          if update_intervals % 30 == 0
+            send_event :in_lobby, gamertag: Client.profile.gamertag
+          end
         end
 
-        def draw
-          Graphics::Text.new(text: 'Welcome to Satellite').draw
+        def layout
+          @layout ||= Satellite::Client::Graphics::Layout::Lobby.new
         end
 
         def button_up(key)
           if key == :escape
-            events_to_send << Network::Event.new(kind: :leave)
+            send_event :leave
             switch Exit.new
           end
         end

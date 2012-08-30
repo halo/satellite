@@ -3,8 +3,10 @@ require 'satellite/network/game_socket'
 module Satellite
   module Network
     class Connection
+      attr_reader :id
 
       def initialize(options={})
+        @id = options[:id] || random_id
         @socket = GameSocket.new preferred_port: options[:port]
       end
 

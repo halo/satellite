@@ -33,6 +33,12 @@ module Satellite
         def replace
         end
 
+        private
+
+        def broadcast(kind, data=nil)
+          events_to_send << Network::Event.new(kind: kind, data: data)
+        end
+
       end
     end
   end

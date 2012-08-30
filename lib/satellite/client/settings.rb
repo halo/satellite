@@ -1,3 +1,5 @@
+require 'satellite/extensions/core/object/blank'
+
 module Satellite
   module Client
     module Settings
@@ -25,6 +27,10 @@ module Satellite
 
       def server_port
         33033
+      end
+
+      def gamertag
+        ARGV.first.presence
       end
 
     end

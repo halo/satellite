@@ -7,6 +7,7 @@ module Satellite
 
         def update
           Client.window.close
+          Log.info 'Bye.'
         end
 
       end

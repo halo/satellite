@@ -3,6 +3,7 @@ require 'satellite/network/client'
 require 'satellite/client/settings'
 require 'satellite/client/input'
 require 'satellite/client/manager/lobby'
+require 'satellite/client/profile'
 
 module Satellite
   module Client
@@ -11,6 +12,10 @@ module Satellite
       # Internal: Convenience wrapper that makes it easier to stub the "global" window-variable in tests
       def self.window
         @@window
+      end
+
+      def self.profile
+        @@profile ||= Profile.new gamertag: Settings.gamertag
       end
 
       def initialize
@@ -28,14 +33,10 @@ module Satellite
       private
 
       def update
-        if new_manager = @manager.replace
-          Log.debug "Switching Manager: #{@manager} -> #{new_manager}"
-          @manager = new_manager
-        end
         receive_events
         @manager.update
         send_events
-        @network.flush
+        switch_manager
       end
 
       def draw
@@ -52,6 +53,7 @@ module Satellite
         while event = @manager.events_to_send.pop do
           @network.send_event event
         end
+        @network.flush
       end
 
       def button_down(id)
@@ -60,6 +62,15 @@ module Satellite
 
       def button_up(id)
         @manager.button_up Input.key(id)
+      end
+
+      private
+
+      def switch_manager
+        if new_manager = @manager.replace
+          Log.debug "Switching Manager: #{@manager} -> #{new_manager}"
+          @manager = new_manager
+        end
       end
 
     end

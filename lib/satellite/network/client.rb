@@ -8,10 +8,9 @@ require 'satellite/network/remote'
 module Satellite
   module Network
     class Client < Connection
-      attr_reader :id, :remote
+      attr_reader :remote
 
       def initialize(options={})
-        @id = options[:id] || random_id
         @remote = Remote.new endpoint: options[:server_endpoint], port: options[:server_port]
         Log.debug "My server is #{@remote.endpoint}:#{@remote.port}."
         super

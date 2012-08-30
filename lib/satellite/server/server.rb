@@ -3,6 +3,7 @@ require 'satellite/network/server'
 require 'satellite/server/loop'
 require 'satellite/server/manager/lobby'
 require 'satellite/server/settings'
+require 'satellite/extensions/core/object/random'
 
 module Satellite
   module Server
@@ -45,11 +46,11 @@ module Satellite
       end
 
       def send_events
-        @manager.events_to_send.each do |event|
+        while event = @manager.events_to_send.pop
           if event.broadcast?
-            @network.broadcast kind: event.kind, data: event.data
+            @network.broadcast event
           else
-            @network.send_event receiver_id: event.receiver_id, kind: event.kind, data: event.data
+            @network.send_event event
           end
         end
       end

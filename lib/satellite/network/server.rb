@@ -22,11 +22,15 @@ module Satellite
           Log.debug "Remote #{event.receiver_id.inspect} not found. I have #{@pool.remotes.inspect}"
           return
         end
-        payload = Marshal.dump({ kind: event.kind, data: event.data })
+        payload = Marshal.dump({ sender_id: id, kind: event.kind, data: event.data })
         @socket.send_datagram Datagram.new endpoint: remote.endpoint, port: remote.port, payload: payload
       end
 
       def broadcast(event)
+        unless event.is_a?(Event)
+          Log.error "Network stack received invalid broadcast event from server: #{event.inspect}"
+          return
+        end
         remotes.values.each do |remote|
           customized_event = Event.new receiver_id: remote.id, kind: event.kind, data: event.data
           send_event customized_event
