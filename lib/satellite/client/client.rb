@@ -23,6 +23,7 @@ module Satellite
         @@window = self
         @network = Network::Client.new port: Settings.listen_port, server_endpoint: Settings.server_endpoint, server_port: Settings.server_port
         @network.send_event Network::Event.new kind: :hello
+        @input = Input::State.new
         @manager = Manager::Lobby.new
       end
 
@@ -32,45 +33,61 @@ module Satellite
 
       private
 
+      def button_down(id)
+        update_mouse_position
+        @input.button_down id
+      end
+
+      def button_up(id)
+        update_mouse_position
+        @input.button_up id
+      end
+
+      def update_mouse_position
+        @input.mouse_x = mouse_x.to_i
+        @input.mouse_y = mouse_y.to_i
+      end
+
       def update
-        receive_events
-        @manager.update
-        send_events
+        receive_network_events
+        receive_user_input
+        update_manager
+        send_network_events
         switch_manager
       end
 
-      def draw
-        @manager.draw
-      end
-
-      def receive_events
+      def receive_network_events
         @network.receive_events do |event|
           @manager.on_event event
         end
       end
 
-      def send_events
+      def receive_user_input
+        update_mouse_position
+        @manager.on_input @input
+      end
+
+      def send_network_events
         while event = @manager.events_to_send.pop do
           @network.send_event event
         end
         @network.flush
       end
 
-      def button_down(id)
-        @manager.button_down Input.key(id)
+      def update_manager
+        @manager.update
       end
-
-      def button_up(id)
-        @manager.button_up Input.key(id)
-      end
-
-      private
 
       def switch_manager
         if new_manager = @manager.replace
           Log.debug "Switching Manager: #{@manager} -> #{new_manager}"
           @manager = new_manager
         end
+      end
+
+      def draw
+        @manager.draw
+        @manager.layout.cursor.draw_rot(mouse_x, mouse_y, 0, 0) if @manager.layout.cursor
       end
 
     end

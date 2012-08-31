@@ -20,6 +20,11 @@ module Satellite
         #
         def update
           @update_intervals += 1
+          on_update
+        end
+
+        # Internal: Callback for subclasses.
+        def on_update
         end
 
         # Internal: The third steps of the Manager life-cycle.
@@ -31,12 +36,6 @@ module Satellite
 
         def switch(manager)
           @replace = manager
-        end
-
-        def button_down(key)
-        end
-
-        def button_up(key)
         end
 
         def to_s

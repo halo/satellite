@@ -22,6 +22,7 @@ module Satellite
             broadcast :players_in_lobby, player_pool.export
           when :leave
             player_pool.delete event.sender_id
+            broadcast :players_in_lobby, player_pool.export
           end
         end
 
