@@ -33,7 +33,7 @@ module Satellite
         #
         def draw
           layout.draw if layout
-          layout.cursor.draw_rot(mouse.x, mouse.y, 0, 0) if layout.cursor && mouse.x
+          layout.cursor.draw(mouse.x, mouse.y, 0) if layout.cursor && mouse.x
         end
 
         def switch(manager)

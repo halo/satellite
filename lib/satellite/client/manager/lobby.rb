@@ -31,6 +31,14 @@ module Satellite
 
         def on_update
           return if exit?
+
+          case layout.hit_action?(mouse)
+          when :new_game
+            Log.debug('new game!')
+
+
+          end
+
           if update_intervals % 30 == 0
             send_event :in_lobby, gamertag: Client.profile.gamertag
           end

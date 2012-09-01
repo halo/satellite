@@ -17,6 +17,10 @@ module Satellite
             [title, players, new_game]
           end
 
+          def hit_action?(mouse)
+            return :new_game if mouse.clicked? && new_game.hit?(mouse.x, mouse.y)
+          end
+
           def new_game
             @new_game_object ||= Graphics::Text.new(text: 'New Game', size: 4, y: players.height + 100)
           end

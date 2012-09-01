@@ -16,6 +16,18 @@ module Satellite
           @a = options[:a] || 0
         end
 
+        def hit?(point_x, point_y)
+          point_x > x && point_x < x2 && point_y > y && point_y < y2
+        end
+
+        def x2
+          x + width
+        end
+
+        def y2
+          y + height
+        end
+
         def draw
           raise "Implement me in a subclass"
         end

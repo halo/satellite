@@ -16,6 +16,9 @@ module Satellite
             objects.each(&:draw)
           end
 
+          def hit_action?(mouse)
+          end
+
         end
       end
     end

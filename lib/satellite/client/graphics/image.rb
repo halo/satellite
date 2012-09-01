@@ -19,6 +19,10 @@ module Satellite
           @image.draw_rot(*args)
         end
 
+        def draw(*args)
+          @image.draw(*args)
+        end
+
       end
     end
   end

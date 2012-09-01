@@ -37,6 +37,10 @@ module Satellite
           end
         end
 
+        def width
+          font.text_width(text) if font
+        end
+
         def default_font
           Gosu::Font.new(window, "assets/fonts/orbitron/orbitron-medium.ttf", height)
         end
