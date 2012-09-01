@@ -1,5 +1,6 @@
 require 'satellite/log'
 require 'satellite/server/manager/default'
+require 'satellite/server/manager/briefing'
 require 'satellite/server/manager/models/player'
 require 'satellite/server/manager/models/player_pool'
 
@@ -12,6 +13,7 @@ module Satellite
         def initialize(options={})
           super
           @player_pool = Models::PlayerPool.new
+          broadcast :state, :lobby
         end
 
         def on_event(event)
@@ -23,7 +25,10 @@ module Satellite
           when :leave
             player_pool.delete event.sender_id
             broadcast :players_in_lobby, player_pool.export
+          when :new_game
+            switch Briefing.new creator_id: event.sender_id, player_pool: player_pool
           end
+          broadcast :state, :lobby
         end
 
         def update

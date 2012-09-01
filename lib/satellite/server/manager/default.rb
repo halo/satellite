@@ -2,7 +2,7 @@ module Satellite
   module Server
     module Manager
       class Default
-        attr_reader :events_to_send
+        attr_reader :events_to_send, :replace
 
         def initialize(options={})
           @events_to_send = []
@@ -27,16 +27,14 @@ module Satellite
         def throttle
         end
 
-        # Internal: Instantiates the next Server::Manager.
-        #
-        # Returns: An Server::Manager::XXX instance or nil.
-        def replace
-        end
-
         private
 
         def broadcast(kind, data=nil)
           events_to_send << Network::Event.new(kind: kind, data: data)
+        end
+
+        def switch(manager)
+          @replace = manager
         end
 
       end

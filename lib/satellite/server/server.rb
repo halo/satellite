@@ -32,26 +32,37 @@ module Satellite
       end
 
       def update
-        @manager = @manager.replace if @manager.replace
-        receive_events
-        @manager.update
-        send_events
-        @network.flush
+        receive_network_events
+        update_manager
+        send_network_events
+        switch_manager
       end
 
-      def receive_events
+      def update_manager
+        @manager.update
+      end
+
+      def receive_network_events
         @network.receive_events do |event|
           @manager.on_event event
         end
       end
 
-      def send_events
+      def send_network_events
         while event = @manager.events_to_send.pop
           if event.broadcast?
             @network.broadcast event
           else
             @network.send_event event
           end
+        end
+        @network.flush
+      end
+
+      def switch_manager
+        if new_manager = @manager.replace
+          Log.debug "Switching Manager: #{@manager} -> #{new_manager}"
+          @manager = new_manager
         end
       end
 
