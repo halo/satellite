@@ -42,7 +42,7 @@ describe Satellite::Network::Server do
       @it.send_event event
       sleep 0.05
       # Making sure it arrived
-      Marshal.load(@client1.recvfrom_nonblock(65507).first).should == { kind: :blue, data: { some: 'data' } }
+      Marshal.load(@client1.recvfrom_nonblock(65507).first).should == { sender_id: 'blue_server', kind: :blue, data: { some: 'data' } }
     end
   end
 
@@ -57,8 +57,8 @@ describe Satellite::Network::Server do
       @it.broadcast Satellite::Network::Event.new kind: :blue, data: { :some => 'one' }
       sleep 0.05
       # Making sure it arrived
-      Marshal.load(@client1.recvfrom_nonblock(65507).first).should == { kind: :blue, data: { some: 'one' } }
-      Marshal.load(@client2.recvfrom_nonblock(65507).first).should == { kind: :blue, data: { some: 'one' } }
+      Marshal.load(@client1.recvfrom_nonblock(65507).first).should == { sender_id: 'blue_server', kind: :blue, data: { some: 'one' } }
+      Marshal.load(@client2.recvfrom_nonblock(65507).first).should == { sender_id: 'blue_server', kind: :blue, data: { some: 'one' } }
     end
   end
 

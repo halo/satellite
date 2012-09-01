@@ -3,6 +3,7 @@ module Satellite
     module Manager
       class Default
         attr_reader :events_to_send, :replace, :update_intervals, :layout
+        attr_accessor :input
 
         def initialize(options={})
           @events_to_send = []
@@ -31,7 +32,8 @@ module Satellite
         #           It draws the universe.
         #
         def draw
-          layout.draw
+          layout.draw if layout
+          layout.cursor.draw_rot(mouse.x, mouse.y, 0, 0) if layout.cursor && mouse.x
         end
 
         def switch(manager)
@@ -46,6 +48,14 @@ module Satellite
 
         def send_event(kind, data=nil)
           events_to_send << Network::Event.new(kind: kind, data: data)
+        end
+
+        def mouse
+          input.mouse if input
+        end
+
+        def keyboard
+          input.keyboard if input
         end
 
       end

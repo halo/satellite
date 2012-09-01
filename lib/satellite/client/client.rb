@@ -1,7 +1,7 @@
 require 'gosu'
 require 'satellite/network/client'
 require 'satellite/client/settings'
-require 'satellite/client/input'
+require 'satellite/client/input/state'
 require 'satellite/client/manager/lobby'
 require 'satellite/client/profile'
 
@@ -50,7 +50,6 @@ module Satellite
 
       def update
         receive_network_events
-        receive_user_input
         update_manager
         send_network_events
         switch_manager
@@ -62,11 +61,6 @@ module Satellite
         end
       end
 
-      def receive_user_input
-        update_mouse_position
-        @manager.on_input @input
-      end
-
       def send_network_events
         while event = @manager.events_to_send.pop do
           @network.send_event event
@@ -75,6 +69,8 @@ module Satellite
       end
 
       def update_manager
+        update_mouse_position
+        @manager.input = @input
         @manager.update
       end
 
@@ -87,7 +83,6 @@ module Satellite
 
       def draw
         @manager.draw
-        @manager.layout.cursor.draw_rot(mouse_x, mouse_y, 0, 0) if @manager.layout.cursor
       end
 
     end

@@ -5,20 +5,13 @@ require 'gosu'
 module Satellite
   module Client
     module Input
-      class State
+      module Devices
         class Default
           include Gosu
           attr_reader :pressed
 
-          MAPPING = {}
-
           def initialize
             @pressed = Set.new
-            MAPPING.values.each do |key|
-              define_method "#{key}?".to_sym do
-                pressed.include? key
-              end
-            end
           end
 
           def button_down(gosu_key_id)
@@ -36,7 +29,7 @@ module Satellite
           private
 
           def key(gosu_key_id)
-            MAPPING[gosu_key_id]
+            self.class.mapping[gosu_key_id]
           end
 
         end
