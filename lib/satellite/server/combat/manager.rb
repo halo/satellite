@@ -9,7 +9,7 @@ require 'satellite/server/event'
 module Satellite
   module Server
     module Combat
-      class Manager
+      class Controller
         attr_reader :events_to_send
 
         def initialize(options={})

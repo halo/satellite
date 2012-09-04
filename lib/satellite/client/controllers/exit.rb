@@ -1,8 +1,8 @@
-require 'satellite/client/manager/default'
+require 'satellite/client/controllers/default'
 
 module Satellite
   module Client
-    module Manager
+    module Controllers
       class Exit < Default
 
         def update

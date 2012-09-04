@@ -2,8 +2,7 @@ require 'gosu'
 require 'satellite/network/client'
 require 'satellite/client/settings'
 require 'satellite/client/input/state'
-require 'satellite/client/manager/lobby'
-require 'satellite/client/profile'
+require 'satellite/client/controllers/default'
 
 module Satellite
   module Client
@@ -14,17 +13,12 @@ module Satellite
         @@window
       end
 
-      def self.profile
-        @@profile ||= Profile.new gamertag: Settings.gamertag
-      end
-
       def initialize
-        super(Settings.screen_width, Settings.screen_height, false, 32)
+        super Settings.screen_width, Settings.screen_height, false, 32
         @@window = self
         @network = Network::Client.new port: Settings.listen_port, server_endpoint: Settings.server_endpoint, server_port: Settings.server_port
-        @network.send_event Network::Event.new kind: :hello
         @input = Input::State.new
-        @manager = Manager::Lobby.new
+        @controller = Controllers::Default.new
       end
 
       def start
@@ -34,55 +28,56 @@ module Satellite
       private
 
       def button_down(id)
-        update_mouse_position
+        # update_mouse_position
         @input.button_down id
       end
 
       def button_up(id)
-        update_mouse_position
+        # update_mouse_position
         @input.button_up id
       end
 
-      def update_mouse_position
+      def update_input
         @input.mouse_x = mouse_x.to_i
         @input.mouse_y = mouse_y.to_i
       end
 
       def update
         receive_network_events
-        update_manager
+        update_input
+        update_controller
         send_network_events
-        switch_manager
+        switch_controller
       end
 
       def receive_network_events
         @network.receive_events do |event|
-          @manager.on_event event
+          @controller.process_event event
         end
       end
 
       def send_network_events
-        while event = @manager.events_to_send.pop do
+        while event = @controller.events_to_send.pop do
           @network.send_event event
         end
         @network.flush
       end
 
-      def update_manager
-        update_mouse_position
-        @manager.input = @input
-        @manager.update
+      def update_controller
+        #update_mouse_position
+        @controller.input = @input
+        @controller.update
       end
 
-      def switch_manager
-        if new_manager = @manager.replace
-          Log.debug "Switching Manager: #{@manager} -> #{new_manager}"
-          @manager = new_manager
+      def switch_controller
+        if new_controller = @controller.replace
+          Log.debug "Switching Controller: #{@controller} -> #{new_controller}"
+          @controller = new_controller
         end
       end
 
       def draw
-        @manager.draw
+        @controller.draw
       end
 
     end

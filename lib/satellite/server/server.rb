@@ -60,7 +60,7 @@ module Satellite
 
       def switch_controller
         if new_controller = @controller.replace
-          Log.debug "Switching Manager: #{@controller} -> #{new_controller}"
+          Log.debug "Switching Controller: #{@controller} -> #{new_controller}"
           @controller = new_controller
         end
       end

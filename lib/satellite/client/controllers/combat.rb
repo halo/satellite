@@ -1,6 +1,6 @@
 module Satellite
   module Client
-    module Manager
+    module Controllers
       class Combat < Default
 
         def initialize(options={})

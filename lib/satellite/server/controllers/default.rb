@@ -60,7 +60,7 @@ module Satellite
           self.class.name.underscore
         end
 
-        # Internal: This controller dies now, mark for switching to another Manager.
+        # Internal: This controller dies now, mark for switching to another Controller.
         #
         def switch(controller)
           @replace = controller

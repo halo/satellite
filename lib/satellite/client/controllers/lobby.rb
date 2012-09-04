@@ -1,11 +1,11 @@
-require 'satellite/client/manager/default'
-require 'satellite/client/manager/exit'
-require 'satellite/client/manager/briefing'
+require 'satellite/client/controllers/default'
+require 'satellite/client/controllers/exit'
+require 'satellite/client/controllers/briefing'
 require 'satellite/client/graphics/layout/lobby'
 
 module Satellite
   module Client
-    module Manager
+    module Controllers
       class Lobby < Default
 
         def on_event(event)
@@ -30,7 +30,7 @@ module Satellite
           end
 
           if update_intervals % 30 == 0
-            send_event :in_lobby, gamertag: Client.profile.gamertag
+            send_event :in_lobby, gamertag: profile.gamertag
           end
         end
 
