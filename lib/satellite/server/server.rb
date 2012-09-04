@@ -1,9 +1,8 @@
 require 'satellite/log'
 require 'satellite/network/server'
 require 'satellite/server/loop'
-require 'satellite/server/manager/lobby'
+require 'satellite/server/controllers/lobby'
 require 'satellite/server/settings'
-require 'satellite/extensions/core/object/random'
 
 module Satellite
   module Server
@@ -11,7 +10,7 @@ module Satellite
 
       def initialize(options={})
         @network = Satellite::Network::Server.new port: Settings.listen_port
-        @manager = Manager::Lobby.new
+        @controller = Controllers::Lobby.new
         @loop = Loop.new
       end
 
@@ -27,29 +26,29 @@ module Satellite
       def start!
         @loop.start do
           update
-          sleep (1.0 / @manager.throttle) if @manager.throttle
+          sleep (1.0 / @controller.throttle) if @controller.throttle
         end
       end
 
       def update
         receive_network_events
-        update_manager
+        update_controller
         send_network_events
-        switch_manager
-      end
-
-      def update_manager
-        @manager.update
+        switch_controller
       end
 
       def receive_network_events
         @network.receive_events do |event|
-          @manager.on_event event
+          @controller.process_event event
         end
       end
 
+      def update_controller
+        @controller.process_update
+      end
+
       def send_network_events
-        while event = @manager.events_to_send.pop
+        while event = @controller.events_to_send.pop
           if event.broadcast?
             @network.broadcast event
           else
@@ -59,10 +58,10 @@ module Satellite
         @network.flush
       end
 
-      def switch_manager
-        if new_manager = @manager.replace
-          Log.debug "Switching Manager: #{@manager} -> #{new_manager}"
-          @manager = new_manager
+      def switch_controller
+        if new_controller = @controller.replace
+          Log.debug "Switching Manager: #{@controller} -> #{new_controller}"
+          @controller = new_controller
         end
       end
 

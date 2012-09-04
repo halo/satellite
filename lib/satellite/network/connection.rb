@@ -1,4 +1,5 @@
 require 'satellite/network/game_socket'
+require 'satellite/extensions/core/object/random'
 
 module Satellite
   module Network

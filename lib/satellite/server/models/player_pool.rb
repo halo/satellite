@@ -1,9 +1,9 @@
-require 'satellite/server/manager/models/pool'
-require 'satellite/server/manager/models/player'
+require 'satellite/server/models/pool'
+require 'satellite/server/models/player'
 
 module Satellite
   module Server
-    module Manager
+    module Controllers
       module Models
         class PlayerPool < Pool
 

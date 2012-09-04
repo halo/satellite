@@ -1,6 +1,6 @@
 module Satellite
   module Server
-    module Manager
+    module Controllers
       module Models
         class Player
           attr_reader :id, :gamertag

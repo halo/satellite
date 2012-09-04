@@ -1,6 +1,6 @@
 module Satellite
   module Client
-    module Manager
+    module Controllers
       class Default
         attr_reader :events_to_send, :replace, :update_intervals, :layout
         attr_accessor :input
