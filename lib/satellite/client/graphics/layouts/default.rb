@@ -3,7 +3,7 @@ require 'satellite/client/graphics/image'
 module Satellite
   module Client
     module Graphics
-      module Layout
+      module Layouts
         class Default
           attr_accessor :objects, :cursor
 

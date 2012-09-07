@@ -1,10 +1,10 @@
-require 'satellite/client/graphics/layout/default'
+require 'satellite/client/graphics/layouts/default'
 require 'satellite/client/graphics/text'
 
 module Satellite
   module Client
     module Graphics
-      module Layout
+      module Layouts
         class Lobby < Default
           attr_reader :player_names
 

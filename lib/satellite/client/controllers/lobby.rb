@@ -1,7 +1,5 @@
-require 'satellite/client/controllers/default'
-require 'satellite/client/controllers/exit'
-require 'satellite/client/controllers/briefing'
-require 'satellite/client/graphics/layout/lobby'
+require 'satellite/client/controllers/dispatcher'
+require 'satellite/client/graphics/layouts/lobby'
 
 module Satellite
   module Client
@@ -11,12 +9,8 @@ module Satellite
         def on_event(event)
           Log.debug "Got event: #{event.inspect}"
           case event.kind
-          when :players_in_lobby
+          when :players
             layout.player_names = event.data
-          when :state
-            if event.data == :briefing
-              switch Briefing.new
-            end
 
           end
         end
@@ -35,7 +29,7 @@ module Satellite
         end
 
         def layout
-          @layout ||= Satellite::Client::Graphics::Layout::Lobby.new
+          @layout ||= Satellite::Client::Graphics::Layouts::Lobby.new
         end
 
         private
@@ -43,7 +37,7 @@ module Satellite
         def exit?
           if keyboard.escape?
             send_event :leave
-            switch Exit.new
+            switch Dispatcher.dispatch :exit
             true
           end
         end

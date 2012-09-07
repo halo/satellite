@@ -1,6 +1,6 @@
 require 'satellite/client/controllers/default'
 require 'satellite/client/controllers/exit'
-require 'satellite/client/graphics/layout/lobby'
+require 'satellite/client/graphics/layouts/lobby'
 
 module Satellite
   module Client
@@ -20,7 +20,7 @@ module Satellite
         end
 
         def layout
-          @layout ||= Satellite::Client::Graphics::Layout::Lobby.new
+          @layout ||= Satellite::Client::Graphics::Layouts::Lobby.new
         end
 
         private

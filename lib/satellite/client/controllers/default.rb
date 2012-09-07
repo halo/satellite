@@ -1,51 +1,68 @@
+require 'satellite/log'
+require 'satellite/client/models/profile'
+require 'satellite/extensions/core/string/inflections'
+
 module Satellite
   module Client
     module Controllers
       class Default
-        attr_reader :events_to_send, :replace, :update_intervals, :layout
+        include Models
+
+        attr_reader :events_to_send, :replace, :layout
         attr_accessor :input
 
         def initialize(options={})
           @events_to_send = []
-          @update_intervals = 0
         end
 
-        # Internal: The first step of the Controller life-cycle.
+        # Internal: Step 1 of 3 of the Controller life-cycle.
         #           It gathers all messages from the server.
         #
         def process_event(event)
           on_event(event)
         end
 
-        # Internal: The second steps of the Controller life-cycle.
+        # Internal: Step 2 of 3 of the Controller life-cycle.
         #           It updates the universe.
         #
-        def update
-          @update_intervals += 1
-          on_update
+        def process_update
+          @last_throttled_update ||= 0
+          update
+          if @last_throttled_update + 200 < Gosu.milliseconds
+            @last_throttled_update = Gosu.milliseconds
+            throttled_update
+          end
         end
 
-        # Internal: Callback for subclasses.
-        def on_update
-        end
-
-        # Internal: The third steps of the Controller life-cycle.
-        #           It draws the universe.
+        # Internal: Step 3 of 3 of the Controller life-cycle.
+        #           It draws the universe on the screen.
         #
         def draw
           layout.draw if layout
-          layout.cursor.draw(mouse.x, mouse.y, 0) if layout.cursor && mouse.x
+          layout.cursor.draw(mouse.x, mouse.y, 0) if layout && layout.cursor && mouse && mouse.x
+        end
+
+        def to_s
+          "#<Controller #{state.inspect}>"
+        end
+
+        private
+
+        # Internal: Convenience callback for subclasses.
+        def on_event(event)
+        end
+
+        # Internal: Convenience callback for subclasses.
+        def update
+        end
+
+        # Internal: Convenience callback for subclasses.
+        def throttled_update
         end
 
         def switch(controller)
           @replace = controller
         end
-
-        def to_s
-          self.class.name.gsub('Satellite::Client::Controller::', '')
-        end
-
-        private
 
         def send_event(kind, data=nil)
           events_to_send << Network::Event.new(kind: kind, data: data)
@@ -59,8 +76,12 @@ module Satellite
           input.keyboard if input
         end
 
+        def state
+          self.class.name.gsub('Satellite::Client::Controllers::', '').underscore.to_sym
+        end
+
         def profile
-          @profile ||= Profile.new gamertag: Settings.gamertag
+          @profile ||= Profile.new
         end
 
       end

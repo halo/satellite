@@ -57,7 +57,7 @@ module Satellite
 
         # Internal: The name of this controller state.
         def state
-          self.class.name.underscore
+          self.class.name.gsub('Satellite::Server::Controllers::', '').underscore.to_sym
         end
 
         # Internal: This controller dies now, mark for switching to another Controller.

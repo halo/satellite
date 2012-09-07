@@ -11,7 +11,7 @@ module Satellite
         include Models
 
         def on_event(event)
-          Log.debug "Got event: #{event.inspect}"
+          Log.debug "Got event: #{event.inspect} by #{event.sender_id.inspect}"
           case event.kind
           when :presence
             if event.data[:state] == state

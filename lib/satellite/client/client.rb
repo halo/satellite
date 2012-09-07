@@ -2,7 +2,7 @@ require 'gosu'
 require 'satellite/network/client'
 require 'satellite/client/settings'
 require 'satellite/client/input/state'
-require 'satellite/client/controllers/default'
+require 'satellite/client/controllers/loading'
 
 module Satellite
   module Client
@@ -16,9 +16,9 @@ module Satellite
       def initialize
         super Settings.screen_width, Settings.screen_height, false, 32
         @@window = self
-        @network = Network::Client.new port: Settings.listen_port, server_endpoint: Settings.server_endpoint, server_port: Settings.server_port
+        @network = Network::Client.new id: Settings.id, port: Settings.listen_port, server_endpoint: Settings.server_endpoint, server_port: Settings.server_port
         @input = Input::State.new
-        @controller = Controllers::Default.new
+        @controller = Controllers::Loading.new
       end
 
       def start
@@ -35,11 +35,6 @@ module Satellite
       def button_up(id)
         # update_mouse_position
         @input.button_up id
-      end
-
-      def update_input
-        @input.mouse_x = mouse_x.to_i
-        @input.mouse_y = mouse_y.to_i
       end
 
       def update
@@ -63,10 +58,15 @@ module Satellite
         @network.flush
       end
 
+      def update_input
+        @input.mouse_x = mouse_x.to_i
+        @input.mouse_y = mouse_y.to_i
+      end
+
       def update_controller
         #update_mouse_position
         @controller.input = @input
-        @controller.update
+        @controller.process_update
       end
 
       def switch_controller

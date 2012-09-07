@@ -1,3 +1,5 @@
+require 'satellite/extensions/core/object/blank'
+
 module Satellite
   module Client
     module Models
@@ -5,7 +7,7 @@ module Satellite
         attr_reader :gamertag
 
         def initialize(options={})
-          @gamertag = options[:gamertag] || 'Bob'
+          @gamertag = options[:gamertag] || Settings.gamertag
         end
 
       end
