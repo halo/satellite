@@ -58,14 +58,13 @@ module Satellite
       end
 
       def update_controller
-        #update_mouse_position
+        #update_input
         @controller.input = @input
         @controller.process_update
       end
 
       def switch_controller
         if new_controller = @controller.replace
-          Log.debug "Switching Controller: #{@controller} -> #{new_controller}"
           @controller = new_controller
         end
       end

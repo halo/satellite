@@ -1,6 +1,6 @@
 require 'satellite/client/controllers/default'
 require 'satellite/client/controllers/exit'
-require 'satellite/client/graphics/layouts/lobby'
+require 'satellite/client/graphics/layouts/briefing'
 
 module Satellite
   module Client
@@ -8,7 +8,6 @@ module Satellite
       class Briefing < Default
 
         def on_event(event)
-          Log.debug "Got event: #{event.inspect}"
         end
 
         def update

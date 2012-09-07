@@ -7,7 +7,6 @@ module Satellite
       class Lobby < Default
 
         def on_event(event)
-          Log.debug "Got event: #{event.inspect}"
           case event.kind
           when :players
             layout.player_names = event.data

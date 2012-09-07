@@ -19,7 +19,6 @@ module Satellite
                 @sprites[id].z = entity.z
                 @sprites[id].a = entity.a.radians_to_gosu
               else
-                Log.debug "Loading #{entity.inspect}"
                 @sprites[id] = Sprite.new image_name: entity.image_name, x: (Settings.screen_width / 2), y: (Settings.screen_height / 2), z: entity.z, a: entity.a.radians_to_gosu
               end
             end

@@ -19,7 +19,11 @@ module Satellite
         #           It gathers all messages from the server.
         #
         def process_event(event)
-          on_event(event)
+          if event.kind == :state && new_controller = Dispatcher.dispatch(event.data)
+            switch new_controller
+          else
+            on_event(event)
+          end
         end
 
         # Internal: Step 2 of 3 of the Controller life-cycle.
