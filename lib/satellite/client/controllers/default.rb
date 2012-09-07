@@ -30,6 +30,7 @@ module Satellite
           update
           if @last_throttled_update + 200 < Gosu.milliseconds
             @last_throttled_update = Gosu.milliseconds
+            send_event :presence, gamertag: profile.gamertag, state: state
             throttled_update
           end
         end
@@ -83,6 +84,15 @@ module Satellite
         def profile
           @profile ||= Profile.new
         end
+
+        def escape_exits!
+          if keyboard.escape?
+            send_event :leave
+            switch Exit.new
+            true
+          end
+        end
+
 
       end
     end

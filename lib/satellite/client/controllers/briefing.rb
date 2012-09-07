@@ -11,26 +11,13 @@ module Satellite
           Log.debug "Got event: #{event.inspect}"
         end
 
-        def on_update
-          return if exit?
+        def update
+          return if escape_exits!
 
-          if update_intervals % 30 == 0
-            send_event :in_briefing, gamertag: profile.gamertag
-          end
         end
 
         def layout
-          @layout ||= Satellite::Client::Graphics::Layouts::Lobby.new
-        end
-
-        private
-
-        def exit?
-          if keyboard.escape?
-            send_event :leave
-            switch Exit.new
-            true
-          end
+          @layout ||= Satellite::Client::Graphics::Layouts::Briefing.new
         end
 
       end

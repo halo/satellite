@@ -1,32 +1,19 @@
+require 'satellite/client/graphics/extensions/default'
+require 'satellite/client/graphics/extensions/position'
+require 'satellite/client/graphics/extensions/rotation'
+require 'satellite/client/graphics/extensions/geometry'
+require 'satellite/client/graphics/extensions/interaction'
+
 module Satellite
   module Client
     module Graphics
       class Object
 
-        # Fixnums representing the coordinates of the object on the window
-        attr_accessor :x, :y, :z
-
-        # A Gosu Radian representing the angle of the image (0 is at the top)
-        attr_accessor :a
-
-        def initialize(options={})
-          @x = options[:x] || 0
-          @y = options[:y] || 0
-          @z = options[:z] || 0
-          @a = options[:a] || 0
-        end
-
-        def hit?(point_x, point_y)
-          point_x > x && point_x < x2 && point_y > y && point_y < y2
-        end
-
-        def x2
-          x + width
-        end
-
-        def y2
-          y + height
-        end
+        include Extensions::Default
+        include Extensions::Position
+        include Extensions::Rotation
+        include Extensions::Geometry
+        include Extensions::Interaction
 
         def draw
           raise "Implement me in a subclass"

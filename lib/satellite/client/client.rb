@@ -1,21 +1,15 @@
-require 'gosu'
 require 'satellite/network/client'
 require 'satellite/client/settings'
+require 'satellite/client/window'
 require 'satellite/client/input/state'
 require 'satellite/client/controllers/loading'
 
 module Satellite
   module Client
-    class Client < Gosu::Window
-
-      # Internal: Convenience wrapper that makes it easier to stub the "global" window-variable in tests
-      def self.window
-        @@window
-      end
+    class Client < Window
 
       def initialize
         super Settings.screen_width, Settings.screen_height, false, 32
-        @@window = self
         @network = Network::Client.new id: Settings.id, port: Settings.listen_port, server_endpoint: Settings.server_endpoint, server_port: Settings.server_port
         @input = Input::State.new
         @controller = Controllers::Loading.new

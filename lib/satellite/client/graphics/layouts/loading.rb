@@ -12,7 +12,7 @@ module Satellite
           end
 
           def loading
-            @loading ||= Graphics::Text.new(text: 'Loading...', size: 4, y: Client.window.height / 2)
+            @loading ||= Graphics::Text.new(text: 'Loading...', size: 4)
           end
 
         end
