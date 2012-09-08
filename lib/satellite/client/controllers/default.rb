@@ -1,6 +1,7 @@
 require 'satellite/log'
 require 'satellite/client/models/profile'
 require 'satellite/extensions/core/string/inflections'
+require 'satellite/extensions/core/object/underscored_class_name'
 
 module Satellite
   module Client
@@ -35,7 +36,8 @@ module Satellite
           update
           if @last_throttled_update + 200 < Gosu.milliseconds
             @last_throttled_update = Gosu.milliseconds
-            send_event :presence, gamertag: profile.gamertag, state: state
+            data = { gamertag: profile.gamertag, state: state }
+            send_event :presence, OpenStruct.new(data)
             throttled_update
           end
         end
@@ -83,7 +85,7 @@ module Satellite
         end
 
         def state
-          self.class.name.gsub('Satellite::Client::Controllers::', '').underscore.to_sym
+          underscored_class_name
         end
 
         def profile
@@ -97,7 +99,6 @@ module Satellite
             true
           end
         end
-
 
       end
     end

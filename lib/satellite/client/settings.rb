@@ -1,6 +1,6 @@
 require 'satellite/extensions/core/object/blank'
 require 'satellite/client/parameters'
-require 'satellite/client/superhero'
+require 'satellite/client/models/superhero'
 require 'satellite/extensions/core/object/random'
 
 module Satellite
@@ -13,7 +13,7 @@ module Satellite
       end
 
       def gamertag
-        Parameters.gamertag.presence  || @@gamertag ||= Superhero.pick
+        Parameters.gamertag.presence  || @@gamertag ||= Models::Superhero.pick
       end
 
       def listen_port

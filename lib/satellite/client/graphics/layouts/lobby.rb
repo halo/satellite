@@ -34,8 +34,9 @@ module Satellite
           end
 
           def player_names=(names)
-            @player_names = names
-            @player_object = nil
+            @title_object.text = names.first
+            #@player_names = names
+            #@player_object = nil
           end
 
         end

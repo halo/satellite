@@ -1,13 +1,13 @@
-require 'satellite/server/controllers/meeting'
+require 'satellite/server/controllers/candidate_meeting'
 require 'satellite/server/controllers/briefing'
+require 'satellite/server/models/candidate'
 
 module Satellite
   module Server
     module Controllers
-      class Lobby < Meeting
+      class Lobby < CandidateMeeting
 
         def on_event(event)
-          super
           case event.kind
           when :new_game
             switch Briefing.new creator_id: event.sender_id
@@ -15,9 +15,7 @@ module Satellite
         end
 
         def update
-          list = players.to_hash :gamertag
-          broadcast :players, list
-          super
+          broadcast :candidates, Candidate.export(:gamertag) if Candidate.any?
         end
 
       end

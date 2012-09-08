@@ -1,7 +1,7 @@
 require 'ostruct'
 require 'satellite/extensions/core/object/random'
-require 'satellite/server/combat/object/physics/body'
-require 'satellite/server/combat/object/physics/radian'
+require 'satellite/server/models/object/physics/body'
+require 'satellite/server/models/object/physics/radian'
 require 'satellite/db/model'
 
 module Satellite

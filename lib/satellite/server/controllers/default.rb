@@ -1,5 +1,6 @@
 require 'satellite/log'
 require 'satellite/extensions/core/string/inflections'
+require 'satellite/extensions/core/object/underscored_class_name'
 
 module Satellite
   module Server
@@ -64,7 +65,7 @@ module Satellite
 
         # Internal: The name of this controller state.
         def state
-          self.class.name.gsub('Satellite::Server::Controllers::', '').underscore.to_sym
+          underscored_class_name
         end
 
         # Internal: This controller dies now, mark for switching to another Controller.

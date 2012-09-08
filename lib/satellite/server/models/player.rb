@@ -1,29 +1,30 @@
-require 'satellite/log'
+require 'satellite/db/model'
 
 module Satellite
   module Server
-    module Controllers
-      module Models
-        class Player
-          attr_reader :id, :gamertag
-          attr_writer :ready
+    module Combat
+      class Player < Satellite::DB::Model
+        attr_reader :keys
+        attr_accessor :object
 
-          def initialize(options={})
-            @id = options[:id]
-            @gamertag = options[:gamertag]
-            @ready = false
-          end
-
-          def ready?
-            !!@ready
-          end
-
-          def to_hash(*keys)
-            all = { gamertag: gamertag, ready: ready? }
-            all.select { |key, value| keys.include?(key) } if keys
-          end
-
+        def initialize(options={})
+          super
+          @keys = {}
+          @object = options[:object]
         end
+
+        def holding?(key)
+          !!keys[key]
+        end
+
+        def button_down(key)
+          keys[key] = true
+        end
+
+        def button_up(key)
+          keys.delete(key)
+        end
+
       end
     end
   end

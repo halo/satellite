@@ -7,7 +7,7 @@ module Satellite
       class Loading < Menu
 
         def update
-          switch Combat.new players: players
+          switch Combat.new
         end
 
       end

@@ -7,6 +7,7 @@ require 'satellite/server/settings'
 module Satellite
   module Server
     class Server
+      attr_reader :network, :controller
 
       def initialize(options={})
         @network = Satellite::Network::Server.new port: Settings.listen_port
@@ -26,7 +27,7 @@ module Satellite
       def start!
         @loop.start do
           update
-          sleep (1.0 / @controller.throttle) if @controller.throttle
+          sleep (1.0 / controller.throttle) if controller.throttle
         end
       end
 
@@ -38,29 +39,29 @@ module Satellite
       end
 
       def receive_network_events
-        @network.receive_events do |event|
-          @controller.process_event event
+        network.receive_events do |event|
+          controller.process_event event
         end
       end
 
       def update_controller
-        @controller.process_update
+        controller.process_update
       end
 
       def send_network_events
-        while event = @controller.events_to_send.pop
+        while event = controller.events_to_send.pop
           if event.broadcast?
-            @network.broadcast event
+            network.broadcast event
           else
-            @network.send_event event
+            network.send_event event
           end
         end
-        @network.flush
+        network.flush
       end
 
       def switch_controller
-        if new_controller = @controller.replace
-          Log.debug "Switching Controller: #{@controller} -> #{new_controller}"
+        if new_controller = controller.replace
+          Log.debug "State #{controller} -> #{new_controller}"
           @controller = new_controller
         end
       end

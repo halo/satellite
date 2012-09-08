@@ -8,6 +8,8 @@ module Satellite
         class Briefing < Default
           attr_reader :players
 
+          # TODO: Refactor this mess
+
           def initialize(options={})
             super
             @players = []
@@ -70,7 +72,7 @@ module Satellite
           end
 
           def you_created_game
-            @you_created_game_object ||= Graphics::Text.new(text: 'You created this game!', y: title.top, x: title.right + 10, size: 4)
+            @you_created_game_object ||= Graphics::Text.new(text: 'You created this game!', y: title.top, x: title.right + 30, size: 4)
           end
 
           def hit_action?(mouse)

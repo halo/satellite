@@ -57,12 +57,14 @@ describe Satellite::Network::GameSocket do
     it 'does not send an invalid datagram' do
       datagram = Satellite::Network::Datagram.new(payload: 'twelve bytes', endpoint: 'invalid IP', port: 12345)
       @it.send_datagram(datagram).should be_false
+      sleep 0.05
       lambda { @receiver.recvfrom_nonblock(65507) }.should raise_error(Errno::EAGAIN)
     end
 
     it 'does not send an datagram with empty payload' do
       datagram = Satellite::Network::Datagram.new(payload: '', endpoint: 'invalid IP', port: 12345)
       @it.send_datagram(datagram).should be_false
+      sleep 0.05
       lambda { @receiver.recvfrom_nonblock(65507) }.should raise_error(Errno::EAGAIN)
     end
   end

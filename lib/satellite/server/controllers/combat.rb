@@ -1,9 +1,9 @@
 require 'ostruct'
-require 'satellite/server/combat/space'
-require 'satellite/server/combat/field'
-require 'satellite/server/combat/object/car'
-require 'satellite/server/combat/player'
-require 'satellite/server/combat/camera'
+require 'satellite/server/models/space'
+require 'satellite/server/models/field'
+require 'satellite/server/models/object/car'
+require 'satellite/server/models/player'
+require 'satellite/server/models/camera'
 require 'satellite/server/controllers/default'
 
 module Satellite

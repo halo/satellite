@@ -1,11 +1,11 @@
 require 'satellite/log'
-require 'satellite/server/controllers/meeting'
+require 'satellite/server/controllers/candidate_meeting'
 require 'satellite/server/controllers/loading'
 
 module Satellite
   module Server
     module Controllers
-      class Briefing < Meeting
+      class Briefing < CandidateMeeting
         attr_reader :creator_id
 
         def initialize(options={})
@@ -14,37 +14,46 @@ module Satellite
         end
 
         def on_event(event)
-          super
-          player = players.find(event.sender_id)
+          return unless candidate = Candidate.find(event.sender_id)
           case event.kind
           when :ready
-            player.ready = true unless player.ready?
+            candidate.update_attribute(:ready, true) unless candidate.ready
           when :unready
-            player.ready = false if player.ready?
+            candidate.update_attribute(:ready, false) if candidate.ready
           when :start_game
-            if all_ready? && event.sender_id == creator_id
-              switch Loading.new players: players
+            if all_ready? && candidate.id == creator_id
+              switch Loading.new
             end
           end
         end
 
         def update
-          creator = players.find(creator_id)
-          creator.ready = true if creator
+          set_creator_ready
           super
-          players.all.each do |receiver|
-            list = players.all.map do |player|
-              export = player.to_hash :gamertag, :ready
-              export.merge!({ you: receiver.id == player.id })
-              created_game = creator_id == player.id
-              export.merge!({ created_game: created_game, can_start_game: (all_ready? && created_game), can_be_ready: !created_game })
-            end
-            send_event receiver.id, :players, list
+          Candidate.each do |candidate|
+            send_event candidate.id, :candidates, candidates_export_for_receiver(candidate)
           end
         end
 
+        def candidates_export_for_receiver(receiver)
+          Candidate.map do |candidate|
+            created_game = creator_id == candidate.id
+            export = candidate.export :gamertag, :ready
+            export.you = receiver.id == candidate.id
+            export.created_game = created_game
+            export.can_start_game = all_ready? && created_game
+            export.can_be_ready = !created_game
+            export
+          end
+        end
+
+        def set_creator_ready
+          creator = Candidate.find(creator_id)
+          creator.update_attribute(:ready, true) if creator
+        end
+
         def all_ready?
-          players.all.all?(&:ready?)
+          Candidate.all?(&:ready)
         end
 
       end

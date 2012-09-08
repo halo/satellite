@@ -1,4 +1,4 @@
-require 'satellite/server/combat/object/object'
+require 'satellite/server/models/object/object'
 require 'satellite/extensions/core/numeric/radians'
 
 module Satellite

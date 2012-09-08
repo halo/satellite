@@ -7,7 +7,7 @@ describe Satellite::DB::Model do
   end
 
   after do
-    @it.destroy_all
+    @it.class.destroy_all
   end
 
   describe '.all' do
@@ -29,10 +29,31 @@ describe Satellite::DB::Model do
 
   describe '.create' do
     it 'permanently stores the record' do
-      it = @it.class.create
-      it.should be_instance_of Satellite::DB::Model
-      it.class.all.should == [it]
-      @it.class.all.should == [it]
+      copy = @it.class.create
+      copy.should be_instance_of Satellite::DB::Model
+      copy.class.all.should == [copy]
+      @it.class.all.should == [copy]
+    end
+  end
+
+  describe '.create_or_update' do
+    it 'creates a record if it doesnt exist' do
+      copy = @it.class.create_or_update
+      copy.should be_instance_of Satellite::DB::Model
+      copy.class.all.should == [copy]
+      @it.class.all.should == [copy]
+    end
+
+    it 'updated a record if it already exist' do
+      new_record = @it.class.create_or_update id: 'abcdefgh'
+      new_record.should be_instance_of Satellite::DB::Model
+      new_record.class.all.should == [new_record]
+      new_record.class.create_or_update id: 'abcdefgh', name: 'Luke'
+      another_record = new_record.class.create_or_update
+      another_record.update_attribute :name, 'Anakin'
+      @it.class.all.should == [new_record, another_record]
+      @it.class.last.read_attribute(:name).should == 'Anakin'
+      @it.class.first.read_attribute(:name).should == 'Luke'
     end
   end
 
@@ -54,5 +75,52 @@ describe Satellite::DB::Model do
       id.should == @it.id
     end
   end
+
+  context 'Enumerable Mixin' do
+    it 'answers to .take' do
+      @it.save
+      @it.class.take(1).should == [@it]
+    end
+  end
+
+  describe '#export' do
+    it 'exports all attributes' do
+      @it.export.id.should == @it.id
+    end
+  end
+
+  describe '.export' do
+    before do
+      blue_record = @it.class.create id: 'bbbbbbbb'
+      red_record = @it.class.create id: 'rrrrrrrr'
+      blue_record.update_attribute :color, 'blue'
+      red_record.update_attribute :color, 'red'
+    end
+
+    it 'exports all records' do
+      export = @it.class.export
+      export.first.id.should == 'bbbbbbbb'
+      export.first.color.should == 'blue'
+      export.last.id.should == 'rrrrrrrr'
+      export.last.color.should == 'red'
+    end
+
+    it 'exports only selected attributes' do
+      export = @it.class.export :color
+      export.first.id.should == nil
+      export.first.color.should == 'blue'
+      export.last.id.should == nil
+      export.last.color.should == 'red'
+    end
+  end
+
+  describe '#update' do
+    it 'updates the attributes' do
+      @it.update name: 'Joe', height: '5m'
+      @it.read_attribute(:name).should == 'Joe'
+      @it.read_attribute(:height).should == '5m'
+    end
+  end
+
 
 end
