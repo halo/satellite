@@ -14,7 +14,9 @@ module Satellite
           if event.data && event.data[:state] == state
             case event.kind
             when :presence
-              players << Player.new(id: event.sender_id, gamertag: event.data[:gamertag])
+              unless players.find event.sender_id
+                players << Player.new(id: event.sender_id, gamertag: event.data[:gamertag])
+              end
             when :leave
               players.delete event.sender_id
             end

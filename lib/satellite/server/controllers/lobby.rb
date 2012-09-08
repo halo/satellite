@@ -15,7 +15,8 @@ module Satellite
         end
 
         def update
-          broadcast :players, players.export_for_lobby
+          list = players.to_hash :gamertag
+          broadcast :players, list
           super
         end
 

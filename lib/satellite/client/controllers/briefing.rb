@@ -9,17 +9,7 @@ module Satellite
         def on_event(event)
           case event.kind
           when :players
-            layout.ready_player_names = []
-            layout.unready_player_names = []
-            event.data.each do |player|
-              if player[:ready]
-                layout.ready_player_names << player[:gamertag]
-              else
-                layout.unready_player_names << player[:gamertag]
-              end
-            end
-          when :ready
-            layout.ready = event.data
+            layout.players = event.data
           end
           super
         end
@@ -33,8 +23,10 @@ module Satellite
           case layout.hit_action?(mouse)
           when :start_game
             send_event :start_game
-          when :ready, :unready
+          when :ready
             send_event :ready
+          when :unready
+            send_event :unready
           end
         end
 

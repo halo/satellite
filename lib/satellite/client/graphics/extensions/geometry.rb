@@ -17,7 +17,7 @@ module Satellite
           end
 
           def bottom
-            y + width
+            y + height
           end
 
         end
