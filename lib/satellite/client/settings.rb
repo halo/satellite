@@ -13,7 +13,7 @@ module Satellite
       end
 
       def gamertag
-        Parameters.gamertag.presence  || Superhero.pick
+        Parameters.gamertag.presence  || @@gamertag ||= Superhero.pick
       end
 
       def listen_port

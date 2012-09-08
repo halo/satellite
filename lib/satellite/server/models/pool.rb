@@ -17,6 +17,14 @@ module Satellite
             data[object.id] = object
           end
 
+          def find(id)
+            data[id]
+          end
+
+          def all
+            data.values
+          end
+
           def delete(player_id)
             data.delete(player_id)
           end

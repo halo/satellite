@@ -19,7 +19,8 @@ module Satellite
         #           It gathers all messages from the server.
         #
         def process_event(event)
-          if event.kind == :state && new_controller = Dispatcher.dispatch(event.data)
+          Log.debug "Got: #{event.inspect}"
+          if event.kind == :state && event.data != state && new_controller = Dispatcher.dispatch(event.data)
             switch new_controller
           else
             on_event(event)

@@ -1,3 +1,4 @@
+require 'satellite/log'
 require 'satellite/extensions/core/string/inflections'
 
 module Satellite
@@ -47,6 +48,12 @@ module Satellite
         #
         def broadcast(kind, data=nil)
           events_to_send << Network::Event.new(kind: kind, data: data)
+        end
+
+        # Internal: Enqueues a network event to be sent to one client.
+        #
+        def send_event(receiver_id, kind, data=nil)
+          events_to_send << Network::Event.new(receiver_id: receiver_id, kind: kind, data: data)
         end
 
         # Internal: Inform all clients of the current controller.

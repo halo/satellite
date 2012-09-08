@@ -1,4 +1,4 @@
-require 'satellite/client/controllers/dispatcher'
+require 'satellite/client/controllers/default'
 require 'satellite/client/graphics/layouts/lobby'
 
 module Satellite
@@ -9,8 +9,7 @@ module Satellite
         def on_event(event)
           case event.kind
           when :players
-            layout.player_names = event.data
-
+            layout.player_names = event.data.map { |player| player[:gamertag] }
           end
         end
 
