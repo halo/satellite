@@ -1,5 +1,6 @@
 require 'satellite/log'
 require 'satellite/server/controllers/meeting'
+require 'satellite/server/controllers/loading'
 
 module Satellite
   module Server
@@ -17,15 +18,12 @@ module Satellite
           player = players.find(event.sender_id)
           case event.kind
           when :ready
-            Log.debug "#{player.gamertag} says READY"
             player.ready = true unless player.ready?
           when :unready
-            Log.debug "#{player.gamertag} says UNREADY"
             player.ready = false if player.ready?
           when :start_game
-            Log.debug "#{player.gamertag} says START_GAME"
             if all_ready? && event.sender_id == creator_id
-              switch Loading.new
+              switch Loading.new players: players
             end
           end
         end
@@ -33,7 +31,6 @@ module Satellite
         def update
           creator = players.find(creator_id)
           creator.ready = true if creator
-          Log.debug "players: #{players.inspect}"
           super
           players.all.each do |receiver|
             list = players.all.map do |player|

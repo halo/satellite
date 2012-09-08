@@ -4,23 +4,23 @@ require 'satellite/server/combat/field'
 require 'satellite/server/combat/object/car'
 require 'satellite/server/combat/player'
 require 'satellite/server/combat/camera'
-require 'satellite/server/event'
+require 'satellite/server/controllers/default'
 
 module Satellite
   module Server
-    module Combat
-      class Controller
+    module Controllers
+      class Combat < Default
         attr_reader :events_to_send
 
         def initialize(options={})
-          @options = OpenStruct.new(options)
+          super
+          @players = options[:players]
           @space = Space.new
-          @events_to_send = []
         end
 
         def on_event(id, name, data)
           Log.debug "Received event #{name} by #{id}: #{data.inspect}"
-          player = Player.find(id)
+          player = players.find(id)
           case name
           when :leave
             if player
@@ -96,7 +96,7 @@ module Satellite
               field << object
             end
             field.camera = Camera.new(object: player.object)
-            @events_to_send << Event.new(player: player, name: :field, data: field.export)
+            send_event player.id, :field, field.export
           end
         end
 
