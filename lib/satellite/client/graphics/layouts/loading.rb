@@ -8,11 +8,11 @@ module Satellite
         class Loading < Default
 
           def objects
-            [loading]
+            [loading_widget]
           end
 
-          def loading
-            @loading ||= Graphics::Text.new(text: 'Loading...', size: 4)
+          def loading_widget
+            @loading_widget ||= Widgets::Title.new text: 'Loading...'
           end
 
         end

@@ -1,5 +1,6 @@
 require 'satellite/client/graphics/layouts/default'
 require 'satellite/client/graphics/text'
+require 'satellite/client/graphics/widgets/title'
 
 module Satellite
   module Client
@@ -37,7 +38,7 @@ module Satellite
           end
 
           def objects
-            result = [title, ready_players, unready_players]
+            result = [title_widget, ready_players, unready_players]
             return result unless me
             if me[:can_be_ready]
               result << (me[:ready] ? unready_button : ready_button)
@@ -47,8 +48,8 @@ module Satellite
             result
           end
 
-          def title
-            @title_object ||= Graphics::Text.new(text: 'Briefing', size: 5)
+          def title_widget
+            @title_widget ||= Widgets::Title.new text: self.class.name.split('::').last
           end
 
           def start_game_button
@@ -64,7 +65,7 @@ module Satellite
           end
 
           def ready_players
-            @ready_players_object ||= Graphics::Text.new(text: 'Ready players: ' + @ready_player_names.join(", "), y: title.bottom + 10, size: 4)
+            @ready_players_object ||= Graphics::Text.new(text: 'Ready players: ' + @ready_player_names.join(", "), y: title_widget.bottom + 10, size: 4)
           end
 
           def unready_players
@@ -72,7 +73,7 @@ module Satellite
           end
 
           def you_created_game
-            @you_created_game_object ||= Graphics::Text.new(text: 'You created this game!', y: title.top, x: title.right + 30, size: 4)
+            @you_created_game_object ||= Graphics::Text.new(text: 'You created this game!', y: title_widget.top, x: title_widget.right + 30, size: 4)
           end
 
           def hit_action?(mouse)

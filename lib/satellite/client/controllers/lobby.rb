@@ -10,7 +10,7 @@ module Satellite
         def on_event(event)
           case event.kind
           when :candidates
-            layout.player_names = event.data.map(&:gamertag)
+            layout.candidates = event.data
           end
         end
 

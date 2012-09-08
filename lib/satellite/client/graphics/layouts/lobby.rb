@@ -6,15 +6,15 @@ module Satellite
     module Graphics
       module Layouts
         class Lobby < Default
-          attr_reader :player_names
+          attr_accessor :candidates
 
           def initialize(options={})
             super
-            @player_names = []
+            @candidates = []
           end
 
           def objects
-            [title, players, new_game]
+            [title_widget, candidates_widget, new_game]
           end
 
           def hit_action?(mouse)
@@ -25,18 +25,21 @@ module Satellite
             @new_game_object ||= Graphics::Text.new(text: 'New Game', size: 4, y: players.height + 100)
           end
 
-          def title
-            @title_object ||= Graphics::Text.new(text: 'Lobby', size: 5)
+          def title_widget
+            @title_widget ||= Widgets::Title.new text: self.class.name.split('::').last
           end
 
-          def players
-            @player_object ||= Graphics::Text.new(text: 'Players found: ' + player_names.join(", "), y: title.height + 20, size: 4)
+          def candidates_widget
+            @candidates_widget ||= Widgets::List.new title: 'Players', records: candidate_names
           end
 
-          def player_names=(names)
-            @title_object.text = names.first
-            #@player_names = names
-            #@player_object = nil
+          def candidates=(new_candidates)
+            super
+            candidates_widget.records = candidate_names
+          end
+
+          def candidate_names
+            candidates.map(&:gamertag)
           end
 
         end
