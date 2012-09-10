@@ -4,25 +4,23 @@ module Satellite
   module Server
     module Models
       class Player < Satellite::DB::Model
-        attr_reader :keys
+        attr_reader :keyboard, :mouse
         attr_accessor :object
 
         def initialize(options={})
           super
-          @keys = {}
+          @keyboard = Set.new
+          @mouse = Set.new
           @object = options[:object]
         end
 
+        def input=(input)
+          @keyboard = input.keyboard
+          @mouse = input.mouse
+        end
+
         def holding?(key)
-          !!keys[key]
-        end
-
-        def button_down(key)
-          keys[key] = true
-        end
-
-        def button_up(key)
-          keys.delete(key)
+          keyboard.include? key
         end
 
       end

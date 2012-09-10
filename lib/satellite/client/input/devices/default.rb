@@ -26,6 +26,10 @@ module Satellite
             end
           end
 
+          def export
+            pressed.to_a
+          end
+
           private
 
           def key(gosu_key_id)

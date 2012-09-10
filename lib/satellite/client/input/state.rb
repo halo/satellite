@@ -35,6 +35,10 @@ module Satellite
           mouse.y = @mouse_y
         end
 
+        def export
+          OpenStruct.new keyboard: keyboard.export, mouse: mouse.export
+        end
+
         private
 
         def update_mouse_position

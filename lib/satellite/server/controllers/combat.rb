@@ -28,20 +28,18 @@ module Satellite
               player.destroy
               broadcast :leave, player.export
             end
-          when :join
+          when :presence
             if player
-              Log.info "Player #{event.sender_id} re-joined the game."
+              #Log.info "Player #{event.sender_id} re-joined the game."
             else
               object = Object::Car.new
               object.warp(CP::Vec2.new(100 + (@space.objects.size * 50), 200))
               @space << object
               Log.info "Adding Player #{event.sender_id} with object #{object.id}..."
-              Player.create id: id, object: object
+              Player.create id: event.sender_id, object: object
             end
-          when :button_down
-            player.button_down(event.data) if player
-          when :button_up
-            player.button_up(event.data) if player
+          when :input
+            player.input = event.data
           else
             #Log.debug "Unknown event #{event.kind.inspect} by #{event.sender_id} with data #{event.data.inspect}"
           end
