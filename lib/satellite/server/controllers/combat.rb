@@ -1,4 +1,5 @@
 require 'ostruct'
+require 'satellite/network/event'
 require 'satellite/server/models/space'
 require 'satellite/server/models/field'
 require 'satellite/server/models/object/car'
@@ -10,7 +11,7 @@ module Satellite
   module Server
     module Controllers
       class Combat < Default
-        attr_reader :events_to_send
+        include Models
 
         def initialize(options={})
           super
@@ -18,32 +19,31 @@ module Satellite
           @space = Space.new
         end
 
-        def on_event(id, name, data)
-          Log.debug "Received event #{name} by #{id}: #{data.inspect}"
-          player = players.find(id)
-          case name
+        def on_event(event)
+          player = Player.find(event.sender_id)
+          case event.kind
           when :leave
             if player
               @space.delete player.object
               player.destroy
-              @events_to_send << Event.new(name: :leave, data: player.export)
+              broadcast :leave, player.export
             end
           when :join
             if player
-              Log.info "Player #{id} re-joined the game."
+              Log.info "Player #{event.sender_id} re-joined the game."
             else
               object = Object::Car.new
               object.warp(CP::Vec2.new(100 + (@space.objects.size * 50), 200))
               @space << object
-              Log.info "Adding Player #{id} with object #{object.id}..."
+              Log.info "Adding Player #{event.sender_id} with object #{object.id}..."
               Player.create id: id, object: object
             end
           when :button_down
-            player.button_down(data) if player
+            player.button_down(event.data) if player
           when :button_up
-            player.button_up(data) if player
+            player.button_up(event.data) if player
           else
-            puts "Unknown event #{name.inspect} by #{id} with data #{data.inspect}"
+            #Log.debug "Unknown event #{event.kind.inspect} by #{event.sender_id} with data #{event.data.inspect}"
           end
         end
 
@@ -54,7 +54,7 @@ module Satellite
         end
 
         def update_space
-          # For accuracy, the physics update 5 times more often than the OpenGL view.
+          # For accuracy, the physics update 5 times more often than the view.
           5.times do
             update_space!
           end

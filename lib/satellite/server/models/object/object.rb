@@ -6,7 +6,7 @@ require 'satellite/db/model'
 
 module Satellite
   module Server
-    module Combat
+    module Models
       module Object
         class Object < Satellite::DB::Model
 

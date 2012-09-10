@@ -3,7 +3,7 @@ require 'satellite/extensions/core/numeric/radians'
 
 module Satellite
   module Server
-    module Combat
+    module Models
       module Object
         class Car < Object
 

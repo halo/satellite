@@ -2,7 +2,7 @@ require 'ostruct'
 
 module Satellite
   module Server
-    module Combat
+    module Models
       class Field
         attr_accessor :camera
 

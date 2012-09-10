@@ -2,7 +2,7 @@ require 'chipmunk'
 
 module Satellite
   module Server
-    module Combat
+    module Models
       module Object
         module Physics
           class Body < CP::Body

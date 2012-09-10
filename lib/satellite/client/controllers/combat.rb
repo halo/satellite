@@ -4,14 +4,15 @@ module Satellite
       class Combat < Default
 
         def initialize(options={})
+          super
           @sprites = {}
         end
 
-        def on_event(name, data)
-          case name
+        def on_event(event)
+          case event.kind
           when :field
-            data.camera
-            data.entities.each do |entity|
+            event.data.camera
+            event.data.entities.each do |entity|
               id = entity.id
               if @sprites[id]
                 @sprites[id].x = entity.x + (Settings.screen_width / 2)
@@ -29,19 +30,19 @@ module Satellite
           @sprites.values.each do |sprite|
             sprite.draw
           end
-          draw_gui
+          #draw_gui
         end
 
-        def draw_gui
-          Graphics::Text.new(:text => 'Welcome to Satellite').draw
-        end
+        #def draw_gui
+        #  Graphics::Text.new(:text => 'Welcome to Satellite').draw
+        #end
 
         def button_down(key)
-          @network.send_event event_name: :button_down, data: key
+          send_event :button_down, key
         end
 
         def button_up(key)
-          @network.send_event event_name: :button_up, data: key
+          send_event :button_up, key
         end
 
       end

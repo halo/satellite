@@ -2,7 +2,7 @@ require 'satellite/db/model'
 
 module Satellite
   module Server
-    module Combat
+    module Models
       class Player < Satellite::DB::Model
         attr_reader :keys
         attr_accessor :object

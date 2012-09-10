@@ -1,6 +1,6 @@
 module Satellite
   module Server
-    module Combat
+    module Models
       class Camera
         attr_reader :x, :y
 

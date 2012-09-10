@@ -1,6 +1,7 @@
 require 'satellite/log'
 require 'satellite/extensions/core/string/inflections'
 require 'satellite/extensions/core/object/underscored_class_name'
+require 'satellite/extensions/core/time/milliseconds'
 
 module Satellite
   module Server
@@ -22,8 +23,21 @@ module Satellite
         # Internal: Step 2 of 2 of the life-cycle. It updates the universe.
         #           This method is called once per game loop tick.
         #
+        #def process_update
+        #  update
+        #end
+
+        # Internal: Step 2 of 3 of the Controller life-cycle.
+        #           It updates the universe.
+        #
         def process_update
+          @last_throttled_update ||= 0
           update
+          if @last_throttled_update + 500 < Time.now.to_ms
+            @last_throttled_update = Time.now.to_ms
+            broadcast :state, state
+            throttled_update
+          end
         end
 
         # Internal: Define roughly how many updates per second should take place.
@@ -43,6 +57,9 @@ module Satellite
         # Internal: Convenience callback of process_update for subclasses.
         #
         def update
+        end
+
+        def throttled_update
         end
 
         # Internal: Enqueues a network event to be sent to all clients.

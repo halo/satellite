@@ -3,7 +3,7 @@ require 'chipmunk'
 
 module Satellite
   module Server
-    module Combat
+    module Models
       class Space
 
         def initialize(options={})

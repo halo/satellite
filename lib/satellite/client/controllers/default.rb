@@ -1,4 +1,5 @@
 require 'satellite/log'
+require 'satellite/network/event'
 require 'satellite/client/models/profile'
 require 'satellite/extensions/core/string/inflections'
 require 'satellite/extensions/core/object/underscored_class_name'
@@ -20,8 +21,8 @@ module Satellite
         #           It gathers all messages from the server.
         #
         def process_event(event)
-          #Log.debug "Got: #{event.inspect}"
           if event.kind == :state && event.data != state && new_controller = Dispatcher.dispatch(event.data)
+            #Log.debug "Got: #{event.data.inspect} VS. #{state.inspect}"
             switch new_controller
           else
             on_event(event)

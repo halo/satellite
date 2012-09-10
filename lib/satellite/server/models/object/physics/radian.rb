@@ -1,6 +1,6 @@
 module Satellite
   module Server
-    module Combat
+    module Models
       module Object
         module Physics
           module Radian

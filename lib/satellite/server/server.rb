@@ -50,6 +50,7 @@ module Satellite
 
       def send_network_events
         while event = controller.events_to_send.pop
+          #Log.debug "Sending: #{event.inspect}"
           if event.broadcast?
             network.broadcast event
           else

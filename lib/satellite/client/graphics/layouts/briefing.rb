@@ -34,7 +34,7 @@ module Satellite
           end
 
           def start_game_button
-            @start_game_button ||= Graphics::Text.new(text: 'Start Game', size: 4, y: ready_button.bottom + 10, x: 20)
+            @start_game_button ||= Graphics::Text.new(text: 'Start Game', size: 4, y: 100, x: 20)
           end
 
           def ready_button

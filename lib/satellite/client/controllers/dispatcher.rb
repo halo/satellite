@@ -2,6 +2,7 @@ require 'satellite/client/controllers/lobby'
 require 'satellite/client/controllers/briefing'
 require 'satellite/client/controllers/loading'
 require 'satellite/client/controllers/exit'
+require 'satellite/client/controllers/combat'
 
 module Satellite
   module Client
@@ -14,6 +15,7 @@ module Satellite
           when :briefing then Briefing.new
           when :loading  then Loading.new
           when :exit     then Exit.new
+          when :combat   then Combat.new
           end
         end
 
