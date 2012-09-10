@@ -6,8 +6,7 @@ module Satellite
     module Graphics
       module Widgets
         class List < Default
-          attr_accessor :title
-          attr_reader :records
+          attr_accessor :title, :records
 
           def initialize(options={})
             super
@@ -17,26 +16,22 @@ module Satellite
           end
 
           def objects
-            [title_sprite, record_sprites]
+            [title_sprite] + record_sprites
           end
 
           def title_sprite
-            @title_sprite ||= Text.new text: text, size: 4, x: @x, y: @y
+            @title_sprite ||= Text.new text: title, size: 5, x: @x, y: @y
           end
 
           def record_sprites
-            i = 0
-            @record_sprites_container.keep_if { |sprite| records.include?(sprite.text) }
-            records.sort.map do |record|
-              i += 1
-              if sprite = @record_sprites_container.detect(&:text)
-                sprite
-              else
-                sprite = Text.new(text: record, size: 4, x: @x)
-                sprite.y = sprite.height * i
-                @record_sprites_container << sprite
-              end
+            records.each_with_index do |record, index|
+              next if @record_sprites_container.detect { |sprite| sprite.text == record}
+              sprite = Text.new(text: record, size: 4, x: @x)
+              sprite.y = title_sprite.bottom + sprite.height * index + 1
+              @record_sprites_container << sprite
             end
+            @record_sprites_container.keep_if { |sprite| records.include?(sprite.text) }
+            @record_sprites_container
           end
 
         end

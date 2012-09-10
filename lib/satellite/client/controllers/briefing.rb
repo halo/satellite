@@ -8,8 +8,8 @@ module Satellite
 
         def on_event(event)
           case event.kind
-          when :players
-            layout.players = event.data
+          when :candidates
+            layout.candidates = event.data
           end
           super
         end

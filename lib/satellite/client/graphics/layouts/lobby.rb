@@ -1,4 +1,5 @@
 require 'satellite/client/graphics/layouts/default'
+require 'satellite/client/graphics/widgets/list'
 require 'satellite/client/graphics/text'
 
 module Satellite
@@ -14,15 +15,16 @@ module Satellite
           end
 
           def objects
-            [title_widget, candidates_widget, new_game]
+            [title_widget, candidates_widget, new_game_button]
           end
 
           def hit_action?(mouse)
-            return :new_game if mouse.clicked? && new_game.hit?(mouse.x, mouse.y)
+            return nil unless mouse.clicked?
+            return :new_game if new_game_button.hit?(mouse.x, mouse.y)
           end
 
-          def new_game
-            @new_game_object ||= Graphics::Text.new(text: 'New Game', size: 4, y: players.height + 100)
+          def new_game_button
+            @new_game_button ||= Graphics::Text.new(text: 'New Game', size: 4, x: 20, y: 100)
           end
 
           def title_widget
@@ -30,11 +32,11 @@ module Satellite
           end
 
           def candidates_widget
-            @candidates_widget ||= Widgets::List.new title: 'Players', records: candidate_names
+            @candidates_widget ||= Widgets::List.new title: 'Players', records: candidate_names, y: title_widget.y, x: (Client.window.width / 2)
           end
 
           def candidates=(new_candidates)
-            super
+            @candidates = new_candidates
             candidates_widget.records = candidate_names
           end
 

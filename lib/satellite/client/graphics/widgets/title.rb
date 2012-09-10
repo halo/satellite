@@ -11,8 +11,8 @@ module Satellite
           def initialize(options={})
             super
             @text = options[:text]
-            @x = default_x
-            @y = default_y
+            @x = 20
+            @y = 20
           end
 
           def objects

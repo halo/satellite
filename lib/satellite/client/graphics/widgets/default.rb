@@ -16,8 +16,8 @@ module Satellite
 
           def initialize(options={})
             super
-            @x = default_x
-            @y = default_y
+            @x = options[:x]
+            @y = options[:y]
           end
 
           def objects
@@ -38,14 +38,6 @@ module Satellite
 
           def width
             y + objects.max(&:width).width
-          end
-
-          def default_x
-            20
-          end
-
-          def default_y
-            20
           end
 
           def draw
